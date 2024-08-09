@@ -1,5 +1,8 @@
 const router = require('koa-router')()
+const crawlerController = require('../controllers/Crawler')
 
-router.get('/')
+router.prefix('/crawler')
+
+router.get('/crawl_slider_data', crawlerController.crawlSliderData)
 
 module.exports = router
