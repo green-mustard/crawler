@@ -1,5 +1,6 @@
 const { startProcess, qiniuUpload } = require('../libs/utils')
 const { addSliderData } = require('../services/Slider')
+const { addPopularCourseData } = require('../services/PopularCourse')
 
 class Crawler {
   crawlSliderData() {
@@ -37,6 +38,36 @@ class Crawler {
       async error(err) {
         console.log('子进程出错：', err)
       },
+    })
+  }
+  crawlPopularCourseData() {
+    startProcess({
+      file: 'popularCourse',
+      message(data) {
+        data.map(async item => {
+          if (item.imgSrc && !item.imgKey) {
+            try {
+              const imgData = await qiniuUpload({
+                url: item.imgSrc,
+                ext: '.jpg',
+                path: 'crawler_3rd_popularcourse/',
+              })
+              if (imgData) {
+                item.imgKey = imgData.key
+              }
+
+              const result = await addPopularCourseData(item)
+              if (result) {
+                console.log('数据保存成功')
+              } else {
+                console.log('数据保存失败')
+              }
+            } catch (error) {}
+          }
+        })
+      },
+      exit(code) {},
+      error(err) {},
     })
   }
 }
