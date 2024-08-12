@@ -1,4 +1,3 @@
-const { where } = require('sequelize')
 const PopularCourseModel = require('../database/models/popularCourse')
 
 class PopularCourseService {
