@@ -24,6 +24,11 @@ const PopularCourse = connection.define('popular_course_data', {
     allowNull: false,
     defaultValue: '',
   },
+  courseLink: {
+    comment: '课程链接',
+    type: STRING,
+    allowNull: false,
+  },
   coursePrice: {
     comment: '课程价格',
     type: STRING,
