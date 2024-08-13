@@ -3,6 +3,7 @@ const { addSliderData } = require('../services/Slider')
 const { addPopularCourseData } = require('../services/PopularCourse')
 const { addTeacherData } = require('../services/Teacher')
 const { addCourseData } = require('../services/Course')
+const { addAgencyInfoData } = require('../services/AgencyInfo')
 
 class Crawler {
   crawlSliderData() {
@@ -136,6 +137,40 @@ class Crawler {
         console.log('子进程退出，退出码：', code)
       },
 
+      error(err) {
+        console.log('子进程出错：', err)
+      },
+    })
+  }
+  crawlAgencyInfoData() {
+    startProcess({
+      file: 'agencyInfo',
+      message(data) {
+        data.map(async item => {
+          if (item.imgSrc && !item.imgKey) {
+            try {
+              const imgData = await qiniuUpload({
+                url: item.imgSrc,
+                ext: '.jpg',
+                path: 'crawl_3rd_agencyinfo/',
+              })
+              if (imgData) {
+                item.imgKey = imgData.key
+              }
+
+              const result = await addAgencyInfoData(item)
+              if (result) {
+                console.log('数据保存成功')
+              } else {
+                console.log('数据保存失败')
+              }
+            } catch (error) {}
+          }
+        })
+      },
+      exit(code) {
+        console.log('子进程退出，退出码：', code)
+      },
       error(err) {
         console.log('子进程出错：', err)
       },
